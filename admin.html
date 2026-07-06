@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>D.LIGHT Admin Console</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell" id="appShell">
+
+  <!-- ============ ADMIN AUTH ============ -->
+  <div id="adminAuthScreen" class="auth-screen">
+    <div class="auth-hero">
+      <div class="sun"></div>
+      <h1>Admin Console</h1>
+      <p>D.LIGHT ENERGY CHAMPION NETWORK</p>
+    </div>
+
+    <div class="error-banner" id="adminAuthError"></div>
+
+    <div class="toggle-row">
+      <button id="tabAdminLogin" class="active" onclick="setAdminAuthMode('login')">Log in</button>
+      <button id="tabAdminBootstrap" onclick="setAdminAuthMode('bootstrap')">First-time setup</button>
+    </div>
+
+    <form id="adminLoginForm" onsubmit="return handleAdminLogin(event)">
+      <div class="field"><label>Username</label><input type="text" id="adminLoginUser" required></div>
+      <div class="field"><label>Password</label><input type="password" id="adminLoginPass" required></div>
+      <button type="submit" class="btn">Log in</button>
+    </form>
+
+    <form id="adminBootstrapForm" onsubmit="return handleBootstrapAdmin(event)" style="display:none;">
+      <p class="helper-text" style="margin:0 0 14px;text-align:left;">
+        Only works once — creates the first admin account for a brand-new
+        deployment. If your company already has an admin, ask them to create
+        your account instead.
+      </p>
+      <div class="field"><label>Your name</label><input type="text" id="bootName" required></div>
+      <div class="field"><label>Choose a username</label><input type="text" id="bootUser" required></div>
+      <div class="field"><label>Choose a password</label><input type="password" id="bootPass" required></div>
+      <button type="submit" class="btn">Create admin account</button>
+    </form>
+
+    <p class="helper-text"><a href="index.html">← Field agent app</a></p>
+  </div>
+
+  <!-- ============ ADMIN DASHBOARD ============ -->
+  <div id="adminApp" style="display:none;">
+    <div class="manifest-header">
+      <div class="manifest-eyebrow"><span class="dot"></span> D.LIGHT ADMIN CONSOLE</div>
+      <div class="manifest-title" id="adminGreeting">Welcome</div>
+      <div class="manifest-sub">SHOPS · EC CODES · INVITES</div>
+      <button class="logout-btn" onclick="adminLogout()">Log out</button>
+    </div>
+
+    <div class="view" id="view-admin-shops">
+
+      <div class="section-label">Create a shop &amp; assign its EC code</div>
+      <form onsubmit="return handleAdminCreateShop(event)">
+        <div class="field"><label>Shop / agent name</label><input type="text" id="newShopName" required></div>
+        <div class="field"><label>EC code (leave blank to auto-assign)</label><input type="text" id="newShopEcCode" placeholder="e.g. 823588"></div>
+        <div class="field"><label>Contact person</label><input type="text" id="newShopContact"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="newShopPhone"></div>
+        <div class="field"><label>Location</label><input type="text" id="newShopLocation" placeholder="Town, County"></div>
+        <button type="submit" class="btn">Create shop &amp; generate invite link</button>
+      </form>
+
+      <div class="invite-card" id="newInviteCard" style="display:none;"></div>
+
+      <div class="section-label">All shops</div>
+      <input type="text" id="adminShopSearch" placeholder="Search by name, EC code or location..." oninput="renderAdminShops()"
+        style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:var(--paper-raised);margin-bottom:12px;font-size:14px;">
+      <div id="adminShopsList"></div>
+
+      <div class="section-label">Agents &amp; sub-agents</div>
+      <div id="adminAgentsList"></div>
+
+      <div class="section-label">Add another admin user</div>
+      <form onsubmit="return handleCreateAdmin(event)">
+        <div class="field"><label>Name</label><input type="text" id="newAdminName" required></div>
+        <div class="field"><label>Username</label><input type="text" id="newAdminUser" required></div>
+        <div class="field"><label>Password</label><input type="password" id="newAdminPass" required></div>
+        <button type="submit" class="btn secondary">Create admin user</button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
