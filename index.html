@@ -10,6 +10,41 @@
 
 <div class="app-shell" id="appShell">
 
+  <!-- ============ INVITE CLAIM SCREEN (shown when the link has ?invite=TOKEN) ============ -->
+  <div id="inviteScreen" class="auth-screen" style="display:none;">
+    <div class="auth-hero">
+      <div class="sun"></div>
+      <h1>Activate your shop</h1>
+      <p>D.LIGHT ENERGY CHAMPION NETWORK</p>
+    </div>
+
+    <div class="error-banner" id="inviteError"></div>
+
+    <div class="invite-card" id="inviteShopCard"></div>
+
+    <form id="inviteForm" onsubmit="return handleClaimInvite(event)">
+      <div class="field">
+        <label>Your full name</label>
+        <input type="text" id="invName" placeholder="e.g. Jane Wanjiru" required>
+      </div>
+      <div class="field">
+        <label>Phone number</label>
+        <input type="tel" id="invPhone" placeholder="07XX XXX XXX" required>
+      </div>
+      <div class="field">
+        <label>Choose a PIN</label>
+        <input type="password" inputmode="numeric" id="invPin" placeholder="4-digit PIN" required>
+      </div>
+      <div class="field">
+        <label>Region / territory</label>
+        <input type="text" id="invRegion" placeholder="e.g. Kilifi">
+      </div>
+      <button type="submit" class="btn">Set my password &amp; log in</button>
+    </form>
+
+    <p class="helper-text">This link was shared with you by your D.LIGHT admin and only works once.</p>
+  </div>
+
   <!-- ============ AUTH SCREEN ============ -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-hero">
@@ -65,7 +100,11 @@
       <button type="submit" class="btn">Create my account</button>
     </form>
 
-    <p class="helper-text">Field agent access only. Trouble logging in? Contact your team lead.</p>
+    <p class="helper-text">
+      Field agent access only. Have a link from your admin? Open it directly to
+      activate your shop instead. Trouble logging in? Contact your team lead.
+    </p>
+    <p class="helper-text"><a href="admin.html">Admin console →</a></p>
   </div>
 
   <!-- ============ MAIN APP ============ -->
@@ -74,6 +113,7 @@
       <div class="manifest-eyebrow"><span class="dot"></span> D.LIGHT FIELD MANIFEST</div>
       <div class="manifest-title" id="agentGreeting">Welcome</div>
       <div class="manifest-sub" id="agentSub">AGENT ID · REGION</div>
+      <button class="logout-btn" onclick="logout()">Log out</button>
     </div>
 
     <!-- SHOPS -->
@@ -160,15 +200,60 @@
       <div id="issuesList"></div>
     </div>
 
+    <!-- SHIPMENTS -->
+    <div class="view hidden" id="view-shipments">
+      <div class="section-label">Log a G4S shipment</div>
+      <form onsubmit="return handleCreateShipment(event)">
+        <div class="field">
+          <label>EC shop</label>
+          <select id="shipShopSelect" required></select>
+        </div>
+        <div class="field">
+          <label>Direction</label>
+          <select id="shipDirection">
+            <option value="Warehouse to Agent">Warehouse → Agent</option>
+            <option value="Agent to Warehouse">Agent → Warehouse (return)</option>
+          </select>
+        </div>
+        <div class="field"><label>Courier</label><input type="text" id="shipCourier" value="G4S"></div>
+        <div class="field"><label>Product</label><input type="text" id="shipProduct" placeholder="e.g. D.LIGHT D30" required></div>
+        <div class="field"><label>Quantity</label><input type="number" id="shipQty" min="1" value="1" required></div>
+        <div class="field"><label>Notes</label><textarea id="shipNotes" placeholder="Waybill number, condition on dispatch, etc."></textarea></div>
+        <button type="submit" class="btn">Log shipment</button>
+      </form>
+      <div class="section-label">Shipments</div>
+      <div id="shipmentsList"></div>
+    </div>
+
+    <!-- TEAM (sub-agents) -->
+    <div class="view hidden" id="view-team">
+      <div id="teamAddCard">
+        <div class="section-label">Add a sub-agent</div>
+        <p class="helper-text" style="margin:0 0 12px;text-align:left;">
+          Bring on a helper to sell at your shop. They'll log in with their own phone + PIN.
+        </p>
+        <form onsubmit="return handleCreateSubAgent(event)">
+          <div class="field"><label>Full name</label><input type="text" id="subName" required></div>
+          <div class="field"><label>Phone number</label><input type="tel" id="subPhone" placeholder="07XX XXX XXX" required></div>
+          <div class="field"><label>Choose a PIN for them</label><input type="password" inputmode="numeric" id="subPin" placeholder="4-digit PIN" required></div>
+          <button type="submit" class="btn">Add sub-agent</button>
+        </form>
+      </div>
+      <div class="section-label">Your sub-agents</div>
+      <div id="teamList"></div>
+    </div>
+
   </div>
 
   <!-- ============ TAB BAR ============ -->
   <div class="tab-bar hidden" id="tabBar">
     <button class="tab-btn active" onclick="switchView('shops')"><span class="glyph">&#127968;</span>Shops</button>
     <button class="tab-btn" onclick="switchView('visits')"><span class="glyph">&#128204;</span>Visits</button>
-    <button class="tab-btn" onclick="switchView('tasks')"><span class="glyph">&#9989;</span>Tasks</button>
+    <button class="tab-btn" onclick="switchView('shipments')"><span class="glyph">&#128666;</span>Shipments</button>
     <button class="tab-btn" onclick="switchView('sales')"><span class="glyph">&#128176;</span>Sales</button>
+    <button class="tab-btn" onclick="switchView('tasks')"><span class="glyph">&#9989;</span>Tasks</button>
     <button class="tab-btn" onclick="switchView('issues')"><span class="glyph">&#9888;</span>Issues</button>
+    <button class="tab-btn hidden" id="teamTabBtn" onclick="switchView('team')"><span class="glyph">&#128101;</span>Team</button>
   </div>
 
 </div>
