@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>D.LIGHT Field Manifest</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell" id="appShell">
+
+  <!-- ============ AUTH SCREEN ============ -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-hero">
+      <div class="sun"></div>
+      <h1>Field Manifest</h1>
+      <p>D.LIGHT ENERGY CHAMPION NETWORK</p>
+    </div>
+
+    <div class="error-banner" id="authError"></div>
+
+    <div class="toggle-row">
+      <button id="tabLogin" class="active" onclick="setAuthMode('login')">Log in</button>
+      <button id="tabRegister" onclick="setAuthMode('register')">Register</button>
+    </div>
+
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <div class="field">
+        <label>Phone number</label>
+        <input type="tel" id="loginPhone" placeholder="07XX XXX XXX" required>
+      </div>
+      <div class="field">
+        <label>PIN</label>
+        <input type="password" inputmode="numeric" id="loginPin" placeholder="4-digit PIN" required>
+      </div>
+      <button type="submit" class="btn">Log in</button>
+    </form>
+
+    <form id="registerForm" onsubmit="return handleRegister(event)" style="display:none;">
+      <div class="field">
+        <label>Full name</label>
+        <input type="text" id="regName" placeholder="e.g. Jane Wanjiru" required>
+      </div>
+      <div class="field">
+        <label>Phone number</label>
+        <input type="tel" id="regPhone" placeholder="07XX XXX XXX" required>
+      </div>
+      <div class="field">
+        <label>Choose a PIN</label>
+        <input type="password" inputmode="numeric" id="regPin" placeholder="4-digit PIN" required>
+      </div>
+      <div class="field">
+        <label>Region / territory</label>
+        <input type="text" id="regRegion" placeholder="e.g. Kilifi">
+      </div>
+      <div class="field">
+        <label>Shop name</label>
+        <input type="text" id="regShopName" placeholder="e.g. Saadia Adam Shop" required>
+      </div>
+      <div class="field">
+        <label>EC code (if you have one)</label>
+        <input type="text" id="regEcCode" placeholder="e.g. 823588">
+      </div>
+      <button type="submit" class="btn">Create my account</button>
+    </form>
+
+    <p class="helper-text">Field agent access only. Trouble logging in? Contact your team lead.</p>
+  </div>
+
+  <!-- ============ MAIN APP ============ -->
+  <div id="mainApp" style="display:none;">
+    <div class="manifest-header">
+      <div class="manifest-eyebrow"><span class="dot"></span> D.LIGHT FIELD MANIFEST</div>
+      <div class="manifest-title" id="agentGreeting">Welcome</div>
+      <div class="manifest-sub" id="agentSub">AGENT ID · REGION</div>
+    </div>
+
+    <!-- SHOPS -->
+    <div class="view" id="view-shops">
+      <div class="stat-row">
+        <div class="stat-box"><div class="num" id="statShops">0</div><div class="lbl">EC Shops</div></div>
+        <div class="stat-box"><div class="num" id="statVisitsToday">0</div><div class="lbl">Visits today</div></div>
+        <div class="stat-box"><div class="num" id="statTasksOpen">0</div><div class="lbl">Open tasks</div></div>
+      </div>
+
+      <div class="section-label">Register a new EC shop</div>
+      <form onsubmit="return handleRegisterShop(event)">
+        <div class="field"><label>EC code (if known)</label><input type="text" id="shopEcCode" placeholder="e.g. 823588"></div>
+        <div class="field"><label>Shop / agent name</label><input type="text" id="shopName" required></div>
+        <div class="field"><label>Contact person</label><input type="text" id="shopContact"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="shopPhone"></div>
+        <div class="field"><label>Location</label><input type="text" id="shopLocation" placeholder="Town, County"></div>
+        <button type="submit" class="btn">Register shop</button>
+      </form>
+
+      <div class="section-label">All EC shops</div>
+      <input type="text" id="shopSearch" placeholder="Search by name, EC code or location..." oninput="renderShops()"
+        style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:var(--paper-raised);margin-bottom:12px;font-size:14px;">
+      <div id="shopsList"></div>
+    </div>
+
+    <!-- VISITS -->
+    <div class="view hidden" id="view-visits">
+      <div class="section-label">Log a shop visit</div>
+      <form onsubmit="return handleLogVisit(event)">
+        <div class="field">
+          <label>EC shop</label>
+          <select id="visitShopSelect" required></select>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="visitNotes" placeholder="What did you observe / discuss?"></textarea></div>
+        <button type="submit" class="btn">Log visit</button>
+      </form>
+      <div class="section-label">Your recent visits</div>
+      <div id="visitsList"></div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="view hidden" id="view-tasks">
+      <div class="section-label">Add a task</div>
+      <form onsubmit="return handleAddTask(event)">
+        <div class="field"><label>Task title</label><input type="text" id="taskTitle" required></div>
+        <div class="field"><label>Details</label><textarea id="taskDesc"></textarea></div>
+        <div class="field"><label>Due date</label><input type="date" id="taskDue"></div>
+        <button type="submit" class="btn">Add task</button>
+      </form>
+      <div class="section-label">Your tasks</div>
+      <div id="tasksList"></div>
+    </div>
+
+    <!-- SALES -->
+    <div class="view hidden" id="view-sales">
+      <div class="section-label">Record a sale</div>
+      <form onsubmit="return handleLogSale(event)">
+        <div class="field">
+          <label>EC shop</label>
+          <select id="saleShopSelect" required></select>
+        </div>
+        <div class="field"><label>Product</label><input type="text" id="saleProduct" placeholder="e.g. D.LIGHT D30" required></div>
+        <div class="field"><label>Quantity</label><input type="number" id="saleQty" min="1" value="1" required></div>
+        <div class="field"><label>Amount (KES)</label><input type="number" id="saleAmount" min="0" required></div>
+        <button type="submit" class="btn">Record sale</button>
+      </form>
+      <div class="section-label">Your recent sales</div>
+      <div id="salesList"></div>
+    </div>
+
+    <!-- ISSUES -->
+    <div class="view hidden" id="view-issues">
+      <div class="section-label">Report an issue</div>
+      <form onsubmit="return handleLogIssue(event)">
+        <div class="field">
+          <label>EC shop</label>
+          <select id="issueShopSelect" required></select>
+        </div>
+        <div class="field"><label>What's the issue?</label><textarea id="issueDesc" required placeholder="e.g. faulty unit, payment dispute, stock shortage"></textarea></div>
+        <button type="submit" class="btn">Report issue</button>
+      </form>
+      <div class="section-label">Your reported issues</div>
+      <div id="issuesList"></div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB BAR ============ -->
+  <div class="tab-bar hidden" id="tabBar">
+    <button class="tab-btn active" onclick="switchView('shops')"><span class="glyph">&#127968;</span>Shops</button>
+    <button class="tab-btn" onclick="switchView('visits')"><span class="glyph">&#128204;</span>Visits</button>
+    <button class="tab-btn" onclick="switchView('tasks')"><span class="glyph">&#9989;</span>Tasks</button>
+    <button class="tab-btn" onclick="switchView('sales')"><span class="glyph">&#128176;</span>Sales</button>
+    <button class="tab-btn" onclick="switchView('issues')"><span class="glyph">&#9888;</span>Issues</button>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
